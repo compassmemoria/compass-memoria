@@ -5,203 +5,102 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Compass Memoria</title>
     <style>
-        /* --- 全体・ベース設定 --- */
         body, html { margin: 0; padding: 0; font-family: 'Helvetica Neue', Arial, sans-serif; background: #111; color: #fff; overflow-x: hidden; }
-        
         .app-container { 
             position: relative; width: 100%; max-width: 500px; margin: 0 auto; min-height: 100vh; 
             background: url('bg/bg_home.png') no-repeat center top / cover fixed; 
-            box-shadow: 0 0 20px rgba(0,0,0,0.8); 
             display: flex; flex-direction: column;
         }
-        
-        /* --- 画面切り替え --- */
-        .screen { 
-            display: none; flex-direction: column; align-items: center; 
-            background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(8px); 
-            padding-bottom: 30px; box-sizing: border-box; flex: 1; width: 100%;
-        }
+        .screen { display: none; flex-direction: column; align-items: center; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px); padding-bottom: 30px; box-sizing: border-box; flex: 1; width: 100%; }
         .screen.active { display: flex; }
-
-        /* --- 共通UIパーツ --- */
-        .title-logo { width: 80%; max-width: 280px; margin-top: 15px; margin-bottom: 10px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); z-index: 10; }
-        .page-title { font-size: 18px; margin: 20px 0; border-bottom: 2px solid gold; padding-bottom: 5px; color: gold; text-shadow: 0 2px 4px #000; letter-spacing: 2px; font-weight: bold; }
-        
-        .ui-btn { width: 90%; max-width: 250px; display: block; cursor: pointer; transition: 0.1s; margin: 10px auto; }
-        .ui-btn:active { transform: scale(0.95); }
-        .disabled-btn { filter: grayscale(100%); opacity: 0.5; pointer-events: none; }
-        
+        .title-logo { width: 80%; max-width: 280px; margin: 20px 0; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); }
+        .page-title { font-size: 18px; margin: 20px 0; border-bottom: 2px solid gold; padding-bottom: 5px; color: gold; font-weight: bold; }
+        .ui-btn { width: 90%; max-width: 250px; cursor: pointer; transition: 0.1s; margin: 10px auto; }
         .btn-home-top { position: absolute; top: 15px; right: 15px; width: 45px; height: 45px; cursor: pointer; z-index: 50; }
-
-        /* --- ホーム画面 --- */
-        #screen-home { justify-content: flex-start; padding-bottom: 0; }
-        .status-board { background: rgba(0, 0, 0, 0.8); border: 1px solid #555; border-radius: 10px; padding: 12px; width: 85%; font-size: 13px; line-height: 1.6; text-align: left; margin-bottom: 15px; box-sizing: border-box; }
-        .status-board span { font-weight: bold; color: gold; }
-        
-        .home-center-chara { flex: 1; width: 100%; display: flex; justify-content: center; align-items: center; margin-bottom: 10px; }
-        .home-center-chara img { max-width: 90%; max-height: 40vh; object-fit: contain; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.8)); }
-
-        .main-menu { display: flex; flex-direction: row; justify-content: center; width: 95%; gap: 10px; margin-top: auto; margin-bottom: 15px; }
+        .status-board { background: rgba(0, 0, 0, 0.8); border: 1px solid #444; border-radius: 10px; padding: 12px; width: 85%; font-size: 13px; margin-bottom: 15px; }
+        .status-board span { color: gold; font-weight: bold; }
+        .home-center-chara { flex: 1; display: flex; justify-content: center; align-items: center; }
+        .home-center-chara img { max-width: 90%; max-height: 40vh; object-fit: contain; }
+        .main-menu { display: flex; justify-content: center; width: 95%; gap: 10px; margin-bottom: 20px; }
         .menu-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; width: 30%; }
-        .menu-btn { width: 100%; object-fit: contain; margin-bottom: 5px; }
-        .menu-text { font-size: 11px; font-weight: bold; color: #fff; }
-
-        .ad-banner-space { width: 100%; height: 60px; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; color: #888; font-size: 11px; border-top: 1px solid #444; }
-
-        /* --- ガチャ演出・結果 --- */
-        #screen-result { justify-content: flex-start; padding-top: 40px; }
-        .card-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-bottom: 30px; width: 100%; }
-        .card { width: 90px; height: 135px; background: #222; border-radius: 8px; overflow: hidden; border: 2px solid #555; position: relative; }
+        .menu-btn { width: 100%; margin-bottom: 5px; }
+        .menu-text { font-size: 11px; font-weight: bold; }
+        .card-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; padding: 10px; }
+        .card { width: 90px; height: 135px; background: #222; border-radius: 8px; overflow: hidden; border: 2px solid #555; }
         .card img { width: 100%; height: 100%; object-fit: cover; }
-        .rare-card { border: 3px solid gold; box-shadow: 0 0 15px gold; transform: scale(1.05); }
-
-        .btn-css-ad {
-            width: 85%; max-width: 280px; padding: 14px;
-            background: linear-gradient(45deg, #FFD700, #FFA500);
-            color: #fff; font-weight: bold; font-size: 16px; border-radius: 50px; border: 3px solid #fff;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5); cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
-        }
-
-        /* --- 【修正】ギャラリー（グリッド形式にして潰れを防止） --- */
-        .gallery-grid { 
-            display: grid; 
-            grid-template-columns: repeat(3, 1fr); /* 常に3列 */
-            gap: 12px; 
-            width: 90%; 
-            overflow-y: auto; 
-            padding: 10px 0; 
-            margin-bottom: 20px;
-        }
-        .gallery-item { 
-            aspect-ratio: 2 / 3; /* 縦横比を固定 */
-            width: 100%;
-            border-radius: 6px; 
-            overflow: hidden; 
-            border: 2px solid #444; 
-            cursor: pointer; 
-            filter: brightness(0.3); 
-            transition: 0.2s; 
-            background: #222;
-        }
-        .gallery-item.owned { filter: brightness(1); border-color: gold; box-shadow: 0 0 10px rgba(255,215,0,0.3); }
+        .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 92%; padding: 10px 0; }
+        .gallery-item { aspect-ratio: 2 / 3; border-radius: 6px; overflow: hidden; border: 2px solid #444; cursor: pointer; filter: brightness(0.3); background: #222; }
+        .gallery-item.owned { filter: brightness(1); border-color: gold; }
         .gallery-item img { width: 100%; height: 100%; object-fit: cover; }
-        .gallery-section-title { grid-column: span 3; text-align: center; color: #fff; margin: 15px 0 5px; font-size: 14px; font-weight: bold; border-bottom: 1px solid #444; padding-bottom: 5px; }
-
-        /* --- カード詳細 --- */
-        #screen-card-detail { padding-top: 20px; overflow-y: auto; }
-        .detail-img-wrapper { width: 75%; max-width: 280px; padding: 8px; background: #000; border: 2px solid gold; border-radius: 15px; box-shadow: 0 0 25px rgba(255,215,0,0.4); margin-bottom: 20px; }
-        .detail-img-wrapper img { width: 100%; height: auto; border-radius: 10px; display: block; }
-        
-        .profile-board { width: 90%; background: rgba(20, 20, 20, 0.9); border-radius: 15px; border: 1px solid #444; padding: 20px; box-sizing: border-box; text-align: left; margin-bottom: 20px; }
-        .prof-name-ja { font-size: 24px; font-weight: bold; color: #fff; margin-bottom: 5px; display: block; }
-        .prof-catch-line { font-size: 13px; color: #00ffcc; font-weight: bold; margin-bottom: 15px; display: block; }
-        .prof-story { font-size: 14px; line-height: 1.7; color: #ddd; margin-bottom: 15px; }
-        .prof-quote-text { font-size: 15px; font-style: italic; color: gold; border-top: 1px solid #333; padding-top: 10px; display: block; }
-
-        .btn-back-common { width: 70%; background: #333; color: #fff; padding: 12px; border-radius: 30px; border: 1px solid #666; font-weight: bold; cursor: pointer; text-align: center; }
-
-        /* --- フルスクリーン --- */
-        #screen-fullscreen { background: #000; justify-content: center; }
-        #fullscreenImg { width: 100%; max-height: 85vh; object-fit: contain; }
-
-        /* --- 合成一覧 --- */
-        .combine-list { width: 95%; overflow-y: auto; flex: 1; padding: 10px 0; }
-        .combine-row { background: rgba(0,0,0,0.8); border: 1px solid #444; border-radius: 10px; padding: 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .combine-thumb { width: 60px; height: 90px; border-radius: 4px; overflow: hidden; border: 1px solid #666; flex-shrink: 0; }
-        .combine-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .gallery-section-title { grid-column: span 3; text-align: center; color: gold; margin: 15px 0 5px; font-weight: bold; }
+        .detail-img-wrapper { width: 80%; max-width: 300px; border: 2px solid gold; border-radius: 15px; margin-bottom: 20px; overflow: hidden; }
+        .detail-img-wrapper img { width: 100%; display: block; }
+        .profile-board { width: 90%; background: rgba(20, 20, 20, 0.9); border-radius: 15px; padding: 20px; box-sizing: border-box; text-align: left; margin-bottom: 20px; border: 1px solid #444; }
+        .prof-name-ja { font-size: 22px; color: gold; display: block; margin-bottom: 10px; }
+        .prof-story { font-size: 14px; line-height: 1.6; color: #ccc; }
+        .btn-back-common { width: 70%; background: #333; color: #fff; padding: 12px; border-radius: 30px; border: 1px solid #666; font-weight: bold; cursor: pointer; margin-top: 10px; text-align: center; }
     </style>
 </head>
 <body>
-
 <div class="app-container">
-
     <div id="screen-home" class="screen active">
-        <img src="ui/title_logp.png" alt="Compass Memoria" class="title-logo">
-        <div class="status-board">
-            <div>レア総数: <span id="rareCount">0</span> 枚 / ノーマル: <span id="normalCount">0</span> 枚</div>
-            <div>広告視聴(1h): <span id="adCount">0</span> / 10 回</div>
-        </div>
-        <div class="home-center-chara">
-            <img id="homeRandomChara" src="" alt="">
-        </div>
+        <img src="ui/title_logp.png" class="title-logo">
+        <div class="status-board">レア総数: <span id="rareCount">0</span> / ノーマル: <span id="normalCount">0</span></div>
+        <div class="home-center-chara"><img id="homeRandomChara" src=""></div>
         <div class="main-menu">
-            <div class="menu-item" onclick="switchScreen('screen-gacha-confirm')">
-                <img src="ui/btn_gacha.png" class="menu-btn">
-                <div class="menu-text">ガチャ</div>
-            </div>
-            <div class="menu-item" onclick="openGallery()">
-                <img src="ui/icon_gallery.png" class="menu-btn">
-                <div class="menu-text">図鑑</div>
-            </div>
-            <div class="menu-item" onclick="openCombine()">
-                <img src="ui/icon_comdine.png" class="menu-btn">
-                <div class="menu-text">合成</div>
-            </div>
+            <div class="menu-item" onclick="switchScreen('screen-gacha-confirm')"><img src="ui/btn_gacha.png" class="menu-btn"><div class="menu-text">ガチャ</div></div>
+            <div class="menu-item" onclick="openGallery()"><img src="ui/icon_gallery.png" class="menu-btn"><div class="menu-text">図鑑</div></div>
+            <div class="menu-item" onclick="openCombine()"><img src="ui/icon_comdine.png" class="menu-btn"><div class="menu-text">進化</div></div>
         </div>
-        <div id="home-banner" class="ad-banner-space">AD BANNER SPACE</div>
     </div>
-
     <div id="screen-gacha-confirm" class="screen">
         <img src="ui/icon_home.png" class="btn-home-top" onclick="switchScreen('screen-home')">
-        <div class="page-title">SPIN GAHA</div>
-        <div id="confirmArea" style="width:100%;"></div>
+        <div class="page-title">SPIN GACHA</div>
+        <img src="ui/btn_gacha.png" class="ui-btn" onclick="executeGacha()">
+        <div id="rescueBtnArea"></div>
     </div>
-
     <div id="screen-video" class="screen">
-        <video id="gachaVideo" playsinline style="width:100%; height:100%; object-fit:contain;"></video>
-        <div onclick="skipVideo()" style="position:absolute; bottom:30px; right:20px; background:rgba(0,0,0,0.6); color:#fff; padding:10px 20px; border-radius:5px; font-size:12px;">スキップ >></div>
+        <video id="gachaVideo" playsinline style="width:100%; height:100%;"></video>
+        <div onclick="skipVideo()" style="position:absolute; bottom:30px; right:20px; background:rgba(0,0,0,0.6); color:#fff; padding:10px 20px; border-radius:5px;">スキップ >></div>
     </div>
-
     <div id="screen-result" class="screen">
         <div class="page-title">RESULT</div>
         <div class="card-container" id="resultDisplay"></div>
-        <div id="resultActionArea" style="width:100%; display:flex; flex-direction:column; align-items:center; gap:15px;"></div>
+        <img src="ui/btn_confirm.png" class="ui-btn" onclick="switchScreen('screen-home')">
     </div>
-
     <div id="screen-gallery" class="screen">
         <img src="ui/icon_home.png" class="btn-home-top" onclick="switchScreen('screen-home')">
         <div class="page-title">CHARACTER DEX</div>
         <div class="gallery-grid" id="galleryGrid"></div>
         <div class="btn-back-common" onclick="switchScreen('screen-home')">閉じる</div>
     </div>
-
     <div id="screen-card-detail" class="screen">
-        <div class="page-title">DATA ANALYZE</div>
-        <div class="detail-img-wrapper" onclick="openFullscreen()">
-            <img id="detailImg" src="">
-        </div>
+        <div class="page-title">CARD DETAIL</div>
+        <div class="detail-img-wrapper" onclick="switchScreen('screen-fullscreen')"><img id="detailImg" src=""></div>
         <div class="profile-board">
             <span id="profName" class="prof-name-ja">---</span>
-            <span id="profCatch" class="prof-catch-line">---</span>
             <div id="profBio" class="prof-story">---</div>
-            <span id="profQuote" class="prof-quote-text">---</span>
         </div>
         <div class="btn-back-common" onclick="switchScreen('screen-gallery')">図鑑に戻る</div>
     </div>
-
-    <div id="screen-fullscreen" class="screen">
-        <img id="fullscreenImg" src="">
-        <div class="btn-back-common" onclick="switchScreen('screen-card-detail')" style="position:absolute; bottom:30px;">CLOSE</div>
-    </div>
-
+    <div id="screen-fullscreen" class="screen"><img id="fullscreenImg" src="" style="width:100%; height:80vh; object-fit:contain;"><div class="btn-back-common" onclick="switchScreen('screen-card-detail')">CLOSE</div></div>
     <div id="screen-combine" class="screen">
         <img src="ui/icon_home.png" class="btn-home-top" onclick="switchScreen('screen-home')">
         <div class="page-title">EVOLUTION</div>
-        <div class="combine-list" id="combineList"></div>
+        <div id="combineList" style="width:100%;"></div>
     </div>
-
 </div>
 
 <script>
     const charaProfiles = {
-        'rera1': { name: 'ひまり (Himari)', catch: '笑顔咲く、甘党ひまわり娘', bio: '明るく人懐っこい性格で、誰とでもすぐに仲良くなれるムードメーカー。新作スイーツには目がない。', quote: '「あ、そのケーキ美味しそう！ひと口、もらってもいい？」' },
-        'rare2': { name: '栞 (Shiori)', catch: '本の虫は、静かに恋を知る', bio: '口数が少なく、感情を表に出すのが苦手な文学少女。心を許した相手には熱く語る一面も。', quote: '「……隣の席、空けておいたから。静かに本を読むなら、座っていいわよ」' },
-        'rare3': { name: '明日香 (Asuka)', catch: '負けず嫌いな熱血エース', bio: 'テニス部の絶対的エースで、スポーツ万能な元気娘。恋愛には少し奥手で強気な態度を取りがち。', quote: '「ほら、ボケっとしてないで走る！勝ったらジュース奢ってあげるから！」' },
-        'rare4': { name: 'すみれ (Sumire)', catch: '暗闇で微笑む、ミステリアス・レディ', bio: '大人びた雰囲気のお姉さん。レイトショーを好む。実は誰よりもロマンチスト。', quote: '「映画が始まるまであと5分……。手を、繋いでいてもいいかしら？」' },
-        'rare5': { name: '渚 (Nagisa)', catch: '潮風まとう、爽やかマーメイド', bio: '海と夏を愛するサバサバした性格のアウトドア派。一緒にいるだけで晴れやかな気分になる。', quote: '「波の音って落ち着くよね。ずっとこうして、ふたりで聞いていたいな」' }
+        'rera1': { name: 'ひまり', bio: '明るく人懐っこいムードメーカー。新作スイーツには目がない。' },
+        'rare2': { name: '栞', bio: '口数が少なく、感情を出すのが苦手な文学少女。' },
+        'rare3': { name: '明日香', bio: 'テニス部の絶対的エース。負けず嫌いな性格。' },
+        'rare4': { name: 'すみれ', bio: '大人びたミステリアスなお姉さん。ロマンチスト。' },
+        'rare5': { name: '渚', bio: '潮風まとう爽やかマーメイド。アウトドア派。' }
     };
 
-    // --- 【超重要】GitHubのファイル名（大文字小文字）を完璧に再現 ---
+    // --- 【修正】GitHubの拡張子（大文字小文字）を完全に再現 ---
     const evoTree = [
         ['rera1 (1).png', 'rera1 (2).PNG', 'rera1 (3).PNG'],
         ['rare2 (1).png', 'rare2 (2).PNG', 'rare2 (3).PNG'],
@@ -209,161 +108,116 @@
         ['rare4 (1).png', 'rare4 (2).PNG', 'rare4 (3).PNG'],
         ['rare5 (1).png', 'rare5 (2).PNG', 'rare5 (3).PNG']
     ];
-    const baseRares = evoTree.map(tree => tree[0]); 
+    const baseRares = evoTree.map(t => t[0]);
+    let data = { rareTotal: 0, normalTotal: 0, inventory: {}, isFirst: true };
 
-    let data = { rareTotal: 0, normalTotal: 0, adHistory: [], isFirstTime: true, inventory: {}, lastFreeSlot: null };
     try {
-        let savedData = localStorage.getItem('compass_memoria_v6');
-        if (savedData) data = JSON.parse(savedData);
+        const saved = localStorage.getItem('compass_v7');
+        if (saved) data = JSON.parse(saved);
     } catch (e) {}
-    if (!data.inventory) data.inventory = {};
 
-    function saveData() { localStorage.setItem('compass_memoria_v6', JSON.stringify(data)); }
+    function saveData() { localStorage.setItem('compass_v7', JSON.stringify(data)); }
 
-    function switchScreen(screenId) {
-        document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
-        document.getElementById(screenId).classList.add('active');
-        window.scrollTo(0, 0);
+    function switchScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        if(id === 'screen-home') document.getElementById('homeRandomChara').src = baseRares[0];
         updateUI();
-        const banner = document.getElementById('home-banner');
-        banner.style.display = (screenId === 'screen-video' || screenId === 'screen-card-detail' || screenId === 'screen-fullscreen') ? 'none' : 'flex';
-        if(screenId === 'screen-home') {
-            document.getElementById('homeRandomChara').src = baseRares[Math.floor(Math.random() * baseRares.length)];
-        }
     }
 
-    function executeGacha(isRescue = false) {
-        let results = [];
+    function executeGacha() {
+        let res = [];
         let hasRare = false;
-        const prob = isRescue ? 0.30 : 0.02;
         for (let i = 0; i < 3; i++) {
-            if ((data.isFirstTime && i === 0) || Math.random() < prob) {
+            if (Math.random() < 0.1 || (data.isFirst && i === 0)) {
                 const r = baseRares[Math.floor(Math.random() * baseRares.length)];
-                results.push({ type: 'RARE', img: r });
+                res.push({ type: 'RARE', img: r });
                 data.inventory[r] = (data.inventory[r] || 0) + 1;
                 data.rareTotal++; hasRare = true;
             } else {
-                const n = Math.floor(Math.random() * 20) + 1;
-                const name = `normal/normal (${n}).png`;
-                results.push({ type: 'NORMAL', img: name });
-                data.inventory[name] = (data.inventory[name] || 0) + 1;
+                const n = `normal/normal (${Math.floor(Math.random() * 20) + 1}).png`;
+                res.push({ type: 'NORMAL', img: n });
+                data.inventory[n] = (data.inventory[n] || 0) + 1;
                 data.normalTotal++;
             }
         }
-        data.isFirstTime = false;
-        if (isRescue) data.normalTotal -= 30;
-        saveData();
-        window.pendingResults = results;
-        playVideo(hasRare);
-    }
-
-    function playVideo(hasRare) {
+        data.isFirst = false; saveData(); window.pending = res;
         switchScreen('screen-video');
         const v = document.getElementById('gachaVideo');
         v.src = hasRare ? 'bg/gacha_rare.mp4' : 'bg/gacha_normal.mp4';
-        v.play().catch(() => skipVideo());
+        v.play().catch(showResult);
         v.onended = showResult;
     }
-    function skipVideo() { document.getElementById('gachaVideo').pause(); showResult(); }
 
     function showResult() {
         switchScreen('screen-result');
-        const container = document.getElementById('resultDisplay');
-        container.innerHTML = '';
-        window.pendingResults.forEach(res => {
-            container.innerHTML += `<div class="card ${res.type==='RARE'?'rare-card':''}"><img src="${res.img}"></div>`;
-        });
-        const actionArea = document.getElementById('resultActionArea');
-        actionArea.innerHTML = `
-            ${data.adHistory.filter(t => Date.now()-t < 3600000).length < 10 ? 
-            '<div class="btn-css-ad" onclick="data.adHistory.push(Date.now()); executeGacha(false)"><div class="icon-play"></div> 広告を見て再挑戦</div>' : ''}
-            <img src="ui/btn_confirm.png" class="ui-btn" onclick="switchScreen('screen-home')">
-        `;
+        const c = document.getElementById('resultDisplay');
+        c.innerHTML = '';
+        window.pending.forEach(r => { c.innerHTML += `<div class="card"><img src="${r.img}"></div>`; });
     }
 
-    function updateUI() {
-        document.getElementById('rareCount').innerText = data.rareTotal;
-        document.getElementById('normalCount').innerText = data.normalTotal;
-        document.getElementById('adCount').innerText = data.adHistory.filter(t => Date.now()-t < 3600000).length;
-        
-        if(document.getElementById('screen-gacha-confirm').classList.contains('active')) {
-            const area = document.getElementById('confirmArea');
-            area.innerHTML = '';
-            const btn = document.createElement('img'); btn.src = 'ui/btn_gacha.png'; btn.className = 'ui-btn';
-            btn.onclick = () => executeGacha(false); area.appendChild(btn);
-            if(data.normalTotal >= 30) {
-                const res = document.createElement('img'); res.src = 'ui/btn_gacha.png'; res.className = 'ui-btn';
-                res.onclick = () => executeGacha(true); area.appendChild(res);
-                area.innerHTML += '<div style="font-size:11px; color:gold;">ノーマル30枚でレア30%ガチャ！</div>';
-            }
-        }
-    }
+    function skipVideo() { document.getElementById('gachaVideo').pause(); showResult(); }
 
     function openGallery() {
-        const grid = document.getElementById('galleryGrid');
-        grid.innerHTML = '<div class="gallery-section-title">RARE MEMORIES</div>';
+        const g = document.getElementById('galleryGrid');
+        g.innerHTML = '<div class="gallery-section-title">RARE</div>';
         evoTree.forEach(tree => tree.forEach(card => {
-            const count = data.inventory[card] || 0;
-            const div = document.createElement('div');
-            div.className = `gallery-item ${count > 0 ? 'owned' : ''}`;
-            div.innerHTML = `<img src="${card}">`;
-            if (count > 0) div.onclick = () => showCardDetail(card, 'RARE');
-            grid.appendChild(div);
+            const owned = (data.inventory[card] || 0) > 0;
+            const item = document.createElement('div');
+            item.className = `gallery-item ${owned ? 'owned' : ''}`;
+            item.innerHTML = `<img src="${card}">`;
+            if (owned) item.onclick = () => showCardDetail(card, 'RARE');
+            g.appendChild(item);
         }));
-        grid.innerHTML += '<div class="gallery-section-title">NORMAL MEMORIES</div>';
-        for(let i=1; i<=20; i++) {
-            const name = `normal/normal (${i}).png`;
-            const count = data.inventory[name] || 0;
-            const div = document.createElement('div');
-            div.className = `gallery-item ${count > 0 ? 'normal-owned' : ''}`;
-            div.innerHTML = `<img src="${name}">`;
-            if (count > 0) div.onclick = () => showCardDetail(name, 'NORMAL');
-            grid.appendChild(div);
+        g.innerHTML += '<div class="gallery-section-title">NORMAL</div>';
+        for(let i=1; i<=20; i++){
+            const n = `normal/normal (${i}).png`;
+            const owned = (data.inventory[n] || 0) > 0;
+            const item = document.createElement('div');
+            item.className = `gallery-item ${owned ? 'owned' : ''}`;
+            item.innerHTML = `<img src="${n}">`;
+            if (owned) item.onclick = () => showCardDetail(n, 'NORMAL');
+            g.appendChild(item);
         }
         switchScreen('screen-gallery');
     }
 
     function showCardDetail(img, type) {
         document.getElementById('detailImg').src = img;
+        document.getElementById('fullscreenImg').src = img;
         const p = document.getElementById('profileArea');
-        if(type === 'RARE') {
+        if (type === 'RARE') {
             p.style.display = 'block';
-            let key = img.includes('rera1') ? 'rera1' : 
-                      img.includes('rare2') ? 'rare2' : 
-                      img.includes('rare3') ? 'rare3' : 
-                      img.includes('rare4') ? 'rare4' : 'rare5';
-            const d = charaProfiles[key];
+            let key = img.includes('rera1') ? 'rera1' : img.split(' ')[0];
+            const d = charaProfiles[key] || { name: '分析中', bio: 'データ収集中...' };
             document.getElementById('profName').innerText = d.name;
-            document.getElementById('profCatch').innerText = d.catch;
             document.getElementById('profBio').innerText = d.bio;
-            document.getElementById('profQuote').innerText = d.quote;
         } else { p.style.display = 'none'; }
         switchScreen('screen-card-detail');
     }
 
-    function openFullscreen() {
-        document.getElementById('fullscreenImg').src = document.getElementById('detailImg').src;
-        switchScreen('screen-fullscreen');
+    function updateUI() {
+        document.getElementById('rareCount').innerText = data.rareTotal;
+        document.getElementById('normalCount').innerText = data.normalTotal;
     }
 
     function openCombine() {
-        const list = document.getElementById('combineList'); list.innerHTML = '';
-        evoTree.forEach(tree => {
-            const c1 = data.inventory[tree[0]] || 0;
-            if(c1 > 0) {
-                const row = document.createElement('div'); row.className = 'combine-row';
-                row.innerHTML = `<div class="combine-info"><div class="combine-thumb"><img src="${tree[0]}"></div><div>1→2段階 (${c1}/5枚)</div></div>`;
-                const b = document.createElement('button'); b.className = 'btn-do-combine'; b.innerText = '合成';
-                b.disabled = c1 < 5;
-                b.onclick = () => { data.inventory[tree[0]] -= 5; data.inventory[tree[1]] = (data.inventory[tree[1]]||0)+1; saveData(); openCombine(); alert('進化成功！'); };
-                row.appendChild(b); list.appendChild(row);
+        const l = document.getElementById('combineList'); l.innerHTML = '';
+        evoTree.forEach(t => {
+            const c = data.inventory[t[0]] || 0;
+            if (c > 0) {
+                l.innerHTML += `<div class="combine-row"><span>${t[0]} (${c}/5)</span><button onclick="evolve('${t[0]}','${t[1]}')" ${c < 5 ? 'disabled' : ''}>進化</button></div>`;
             }
         });
         switchScreen('screen-combine');
     }
 
-    document.getElementById('homeRandomChara').src = baseRares[0];
-    updateUI();
+    function evolve(pre, post) {
+        data.inventory[pre] -= 5; data.inventory[post] = (data.inventory[post] || 0) + 1;
+        saveData(); openCombine(); alert('進化しました！');
+    }
+
+    switchScreen('screen-home');
 </script>
 </body>
 </html>
