@@ -120,7 +120,7 @@
         .btn-do-combine { background: linear-gradient(45deg, #ff007f, #ff8c00); color: #fff; border: none; padding: 10px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 14px; }
         .btn-do-combine:disabled { background: #444; color: #888; cursor: not-allowed; }
 
-        /* --- 新設：進化成功演出画面 --- */
+        /* --- 進化成功演出画面 --- */
         #screen-evo-ceremony { justify-content: center; align-items: center; background: radial-gradient(circle, #222 0%, #000 100%); }
         .evo-success-title { font-size: 32px; font-weight: bold; color: gold; text-shadow: 0 0 15px gold; margin-bottom: 30px; animation: glow 2s infinite; }
         @keyframes glow { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.8; transform: scale(1.05); } }
@@ -169,7 +169,7 @@
     </div>
 
     <div id="screen-video" class="screen">
-        <video id="gachaVideo" playsinline preload="auto"></video>
+        <video id="gachaVideo" playsinline muted preload="auto"></video>
         <button class="skip-btn" onclick="skipVideo()">スキップ >></button>
     </div>
 
@@ -508,7 +508,6 @@
         switchScreen('screen-fullscreen');
     }
 
-    // --- 改修：進化ロジックと演出 ---
     function openCombine() {
         const list = document.getElementById('combineList');
         list.innerHTML = '';
@@ -520,7 +519,6 @@
             const countStage1 = data.inventory[stage1Card] || 0; 
             const countStage2 = data.inventory[stage2Card] || 0;
 
-            // 1段階 → 2段階への進化表示
             if (countStage1 > 0) {
                 hasCombinable = true;
                 const canCombine = countStage1 >= COMBINE_COST;
@@ -534,16 +532,15 @@
                         data.inventory[stage1Card] -= COMBINE_COST;
                         data.inventory[stage2Card] = (data.inventory[stage2Card] || 0) + 1;
                         saveData();
-                        showEvoCeremony(stage2Card); // 演出呼び出し
+                        showEvoCeremony(stage2Card);
                     };
                 }
                 row.appendChild(btn); list.appendChild(row);
             }
 
-            // 2段階 → 3段階への進化表示 (2段階目を持っている時に表示)
             if (countStage2 > 0) {
                 hasCombinable = true;
-                const canCombineFinal = countStage1 >= COMBINE_COST; // 素材は1段階目5枚
+                const canCombineFinal = countStage1 >= COMBINE_COST;
                 const rowFinal = document.createElement('div');
                 rowFinal.className = 'combine-row';
                 rowFinal.innerHTML = `<div class="combine-info"><div class="combine-thumb ${canCombineFinal ? 'ready' : ''}"><img src="${stage2Card}" style="${canCombineFinal ? '' : 'filter: brightness(0.6);'}"></div><div class="combine-text"><div class="stage">第2段階 → 第3段階へ</div>素材(第1段階): <span class="${canCombineFinal ? 'ready-text' : ''}">${countStage1}</span> / ${COMBINE_COST} 枚</div></div>`;
@@ -551,11 +548,11 @@
                 btnFinal.className = 'btn-do-combine'; btnFinal.innerText = '最終進化'; btnFinal.disabled = !canCombineFinal;
                 if (canCombineFinal) {
                     btnFinal.onclick = () => {
-                        data.inventory[stage2Card] -= 1; // 2段階目を消費
-                        data.inventory[stage1Card] -= COMBINE_COST; // 素材の1段階目5枚を消費
+                        data.inventory[stage2Card] -= 1;
+                        data.inventory[stage1Card] -= COMBINE_COST;
                         data.inventory[stage3Card] = (data.inventory[stage3Card] || 0) + 1;
                         saveData();
-                        showEvoCeremony(stage3Card); // 演出呼び出し
+                        showEvoCeremony(stage3Card);
                     };
                 }
                 rowFinal.appendChild(btnFinal); list.appendChild(rowFinal);
@@ -565,7 +562,6 @@
         switchScreen('screen-combine');
     }
 
-    // 進化演出画面の表示
     function showEvoCeremony(newCardName) {
         document.getElementById('evoSuccessImg').src = newCardName;
         switchScreen('screen-evo-ceremony');
