@@ -68,43 +68,13 @@
 
         /* CSSで作る広告ボタン */
         .btn-css-ad {
-            position: relative;
-            width: 90%;
-            max-width: 280px;
-            padding: 15px 10px;
-            background: linear-gradient(45deg, #FFD700, #FFA500);
-            color: #fff;
-            font-weight: bold;
-            font-size: 16px;
-            text-align: center;
-            border-radius: 50px;
-            border: 3px solid #fff;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5), inset 0 0 10px rgba(255,255,255,0.5);
-            cursor: pointer;
-            overflow: hidden;
-            transition: 0.2s;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+            position: relative; width: 90%; max-width: 280px; padding: 15px 10px;
+            background: linear-gradient(45deg, #FFD700, #FFA500); color: #fff; font-weight: bold; font-size: 16px; text-align: center; border-radius: 50px; border: 3px solid #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.5), inset 0 0 10px rgba(255,255,255,0.5); cursor: pointer; overflow: hidden; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
         }
         .btn-css-ad::after {
-            content: "";
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
-            transform: rotate(30deg);
-            animation: shine 3s infinite;
+            content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%); transform: rotate(30deg); animation: shine 3s infinite;
         }
-        @keyframes shine {
-            0% { top: -100%; left: -100%; }
-            20% { top: 100%; left: 100%; }
-            100% { top: 100%; left: 100%; }
-        }
+        @keyframes shine { 0% { top: -100%; left: -100%; } 20% { top: 100%; left: 100%; } 100% { top: 100%; left: 100%; } }
         .btn-css-ad:active { transform: scale(0.95); }
         .btn-css-ad .icon-play { width: 0; height: 0; border-top: 8px solid transparent; border-bottom: 8px solid transparent; border-left: 12px solid #fff; }
 
@@ -149,6 +119,13 @@
         .combine-text span.ready-text { color: gold; }
         .btn-do-combine { background: linear-gradient(45deg, #ff007f, #ff8c00); color: #fff; border: none; padding: 10px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 14px; }
         .btn-do-combine:disabled { background: #444; color: #888; cursor: not-allowed; }
+
+        /* --- 新設：進化成功演出画面 --- */
+        #screen-evo-ceremony { justify-content: center; align-items: center; background: radial-gradient(circle, #222 0%, #000 100%); }
+        .evo-success-title { font-size: 32px; font-weight: bold; color: gold; text-shadow: 0 0 15px gold; margin-bottom: 30px; animation: glow 2s infinite; }
+        @keyframes glow { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.8; transform: scale(1.05); } }
+        .evo-img-display { width: 85%; max-width: 320px; border: 4px solid gold; border-radius: 20px; box-shadow: 0 0 50px rgba(255,215,0,0.6); margin-bottom: 40px; animation: evoPop 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes evoPop { 0% { transform: scale(0.5) rotate(-10deg); opacity: 0; } 100% { transform: scale(1) rotate(0deg); opacity: 1; } }
 
         img { color: transparent; position: relative; }
         img::after { content: attr(alt); position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #333; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 12px; text-align: center; }
@@ -200,8 +177,7 @@
         <img src="ui/icon_home.png" alt="ホーム" class="btn-home-top" onclick="switchScreen('screen-home')">
         <div class="page-title">ガチャ結果</div>
         <div class="card-container" id="resultDisplay"></div>
-        <div class="result-actions" id="resultActionArea">
-            </div>
+        <div class="result-actions" id="resultActionArea"></div>
     </div>
 
     <div id="screen-gallery" class="screen">
@@ -238,6 +214,12 @@
         <div class="combine-list" id="combineList"></div>
     </div>
 
+    <div id="screen-evo-ceremony" class="screen">
+        <div class="evo-success-title">EVOLUTION SUCCESS!!</div>
+        <img id="evoSuccessImg" src="" class="evo-img-display" alt="進化後キャラ">
+        <div class="btn-text-back" onclick="switchScreen('screen-combine')" style="background: linear-gradient(45deg, #FFD700, #FFA500);">進化一覧に戻る</div>
+    </div>
+
 </div>
 
 <script>
@@ -256,7 +238,7 @@
         updateUI();
 
         const banner = document.getElementById('home-banner');
-        if (screenId === 'screen-video' || screenId === 'screen-card-detail' || screenId === 'screen-fullscreen') {
+        if (screenId === 'screen-video' || screenId === 'screen-card-detail' || screenId === 'screen-fullscreen' || screenId === 'screen-evo-ceremony') {
             banner.style.display = 'none';
         } else {
             banner.style.display = 'flex';
@@ -273,7 +255,6 @@
     const normalCount = 20;
     const COMBINE_COST = 5;
 
-    // --- 【修正】GitHubのファイル構成と拡張子（大文字小文字）を完全に再現 ---
     const evoTree = [
         ['rera1 (1).png', 'rera1 (2).PNG', 'rera1 (3).PNG'],
         ['rare2 (1).png', 'rare2 (2).PNG', 'rare2 (3).PNG'],
@@ -527,13 +508,19 @@
         switchScreen('screen-fullscreen');
     }
 
+    // --- 改修：進化ロジックと演出 ---
     function openCombine() {
         const list = document.getElementById('combineList');
         list.innerHTML = '';
         let hasCombinable = false;
         evoTree.forEach((tree) => {
             const stage1Card = tree[0]; 
+            const stage2Card = tree[1];
+            const stage3Card = tree[2];
             const countStage1 = data.inventory[stage1Card] || 0; 
+            const countStage2 = data.inventory[stage2Card] || 0;
+
+            // 1段階 → 2段階への進化表示
             if (countStage1 > 0) {
                 hasCombinable = true;
                 const canCombine = countStage1 >= COMBINE_COST;
@@ -545,15 +532,43 @@
                 if (canCombine) {
                     btn.onclick = () => {
                         data.inventory[stage1Card] -= COMBINE_COST;
-                        data.inventory[tree[1]] = (data.inventory[tree[1]] || 0) + 1;
-                        saveData(); alert("進化成功！"); openCombine();
+                        data.inventory[stage2Card] = (data.inventory[stage2Card] || 0) + 1;
+                        saveData();
+                        showEvoCeremony(stage2Card); // 演出呼び出し
                     };
                 }
                 row.appendChild(btn); list.appendChild(row);
             }
+
+            // 2段階 → 3段階への進化表示 (2段階目を持っている時に表示)
+            if (countStage2 > 0) {
+                hasCombinable = true;
+                const canCombineFinal = countStage1 >= COMBINE_COST; // 素材は1段階目5枚
+                const rowFinal = document.createElement('div');
+                rowFinal.className = 'combine-row';
+                rowFinal.innerHTML = `<div class="combine-info"><div class="combine-thumb ${canCombineFinal ? 'ready' : ''}"><img src="${stage2Card}" style="${canCombineFinal ? '' : 'filter: brightness(0.6);'}"></div><div class="combine-text"><div class="stage">第2段階 → 第3段階へ</div>素材(第1段階): <span class="${canCombineFinal ? 'ready-text' : ''}">${countStage1}</span> / ${COMBINE_COST} 枚</div></div>`;
+                const btnFinal = document.createElement('button');
+                btnFinal.className = 'btn-do-combine'; btnFinal.innerText = '最終進化'; btnFinal.disabled = !canCombineFinal;
+                if (canCombineFinal) {
+                    btnFinal.onclick = () => {
+                        data.inventory[stage2Card] -= 1; // 2段階目を消費
+                        data.inventory[stage1Card] -= COMBINE_COST; // 素材の1段階目5枚を消費
+                        data.inventory[stage3Card] = (data.inventory[stage3Card] || 0) + 1;
+                        saveData();
+                        showEvoCeremony(stage3Card); // 演出呼び出し
+                    };
+                }
+                rowFinal.appendChild(btnFinal); list.appendChild(rowFinal);
+            }
         });
         if (!hasCombinable) list.innerHTML = '<div style="text-align:center; color:#aaa; margin-top:50px;">合成可能なカードがありません</div>';
         switchScreen('screen-combine');
+    }
+
+    // 進化演出画面の表示
+    function showEvoCeremony(newCardName) {
+        document.getElementById('evoSuccessImg').src = newCardName;
+        switchScreen('screen-evo-ceremony');
     }
 
     const initialRandom = baseRares[0];
